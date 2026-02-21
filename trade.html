@@ -137,7 +137,6 @@ canvas{
 
 /* ================= BLINK ================= */
 @keyframes blink{ from{opacity:1;} to{opacity:0.5;} }
-
 </style>
 </head>
 <body class="dark">
@@ -205,10 +204,10 @@ canvas{
   <ul id="history"></ul>
 </div>
 
-<!-- ================= NAV ================= -->
+<!-- ================= NAV BUTTONS ================= -->
 <div class="btn-group">
-  <button class="btn-dark" onclick="location.href='withdrawal.html'">Withdrawal</button>
-  <button class="btn-dark" onclick="location.href='home.html'">Dashboard</button>
+  <button class="btn-dark" onclick="redirectWithLoader('withdrawal.html')">Withdrawal</button>
+  <button class="btn-dark" onclick="redirectWithLoader('home.html')">Dashboard</button>
 </div>
 
 <!-- ================= DEPOSIT POPUP ================= -->
@@ -235,24 +234,23 @@ canvas{
   </div>
 </div>
 
-<!-- ================= LOADER (Optional) ================= -->
+<!-- ================= LOADER ================= -->
 <div id="loader" class="loader hidden">
   <div class="spinner"></div>
-  <p>Processing...</p>
+  <p>Redirecting...</p>
 </div>
 
-<!-- ================= SCRIPT ================= -->
+<!-- ================= SCRIPTS ================= -->
 <script src="script.js" defer></script>
 <script>
-// ================= POPUP WALLET =================
+// ================= WALLET =================
 let wallets = {
  "USDT-ERC20":"0xA7f9C12D4E5F678901234567890ABCDEF1234567",
  "USDT-TRC20":"TXYz123456789ABCDEFGHJKLMNPQRST",
  "SOL":"9xQeWvG816bUx9EPfC9w8PqgkF5abcXYZ1234567",
- "BTC":"bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+ "BTC":"bc1qxy2kgdygjrsqtz2n0yrf2493p83kkfjhx0wlh",
  "BNB":"bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"
 };
-
 function openDeposit(){ document.getElementById("depositPopup").style.display="flex"; updateWallet(); }
 function closeDeposit(){ document.getElementById("depositPopup").style.display="none"; document.getElementById("depositLoading").innerText=""; }
 function updateWallet(){ document.getElementById("walletAddress").innerText = wallets[document.getElementById("networkSelect").value]; }
@@ -278,7 +276,6 @@ function loadHistory(){
  list.forEach(item=>historyEl.innerHTML+=`<li>${item}</li>`);
 }
 loadHistory();
-
 function updateBalanceEl(){ balanceEl.innerText="$"+balance.toFixed(2); }
 
 // ================= LIVE BALANCE =================
@@ -309,25 +306,19 @@ function startStopTrade(){ window.tradingRunning=!window.tradingRunning; }
 const canvas=document.getElementById("chart");
 const ctx=canvas.getContext("2d");
 canvas.width=canvas.offsetWidth; canvas.height=320;
-
 let candles=[],maxCandles=40,basePrice=50000,marketMode="Normal";
 let pairVolatility={"BTC/USDT":120,"ETH/USDT":80,"SOL/USDT":60,"ADA/USDT":40,"XRP/USDT":35,"DOGE/USDT":30,"DOT/USDT":45,"LTC/USDT":55,"AVAX/USDT":70,"TRX/USDT":25};
 let modeMultiplier={"Calm":0.5,"Normal":1,"Volatile":2};
-
-function toggleMarketMode(){ 
-  marketMode = marketMode==="Calm"?"Normal":marketMode==="Normal"?"Volatile":"Calm"; 
+function toggleMarketMode(){ marketMode = marketMode==="Calm"?"Normal":marketMode==="Normal"?"Volatile":"Calm"; }
+function generateCandle(){ 
+  let pair=document.getElementById("pair").value;
+  let vol = pairVolatility[pair]*modeMultiplier[marketMode];
+  let open=basePrice, close=open+(Math.random()-0.5)*vol;
+  let high=Math.max(open,close)+Math.random()*vol/2;
+  let low=Math.min(open,close)-Math.random()*vol/2;
+  basePrice=close; candles.push({open,close,high,low});
+  if(candles.length>maxCandles)candles.shift();
 }
-
-function generateCandle(){
- let pair=document.getElementById("pair").value;
- let vol = pairVolatility[pair]*modeMultiplier[marketMode];
- let open=basePrice, close=open+(Math.random()-0.5)*vol;
- let high=Math.max(open,close)+Math.random()*vol/2;
- let low=Math.min(open,close)-Math.random()*vol/2;
- basePrice=close; candles.push({open,close,high,low});
- if(candles.length>maxCandles)candles.shift();
-}
-
 function drawChart(){
  ctx.clearRect(0,0,canvas.width,canvas.height);
  let max=Math.max(...candles.map(c=>c.high)), min=Math.min(...candles.map(c=>c.low)), w=canvas.width/maxCandles;
@@ -337,13 +328,12 @@ function drawChart(){
    let closeY=canvas.height-(c.close-min)*scale;
    let highY=canvas.height-(c.high-min)*scale;
    let lowY=canvas.height-(c.low-min)*scale;
-   ctx.strokeStyle=c.close>c.open?var(--green):var(--red);
+   ctx.strokeStyle=c.close>c.open?"#00c087":"#f6465d";
    ctx.fillStyle=ctx.strokeStyle;
    ctx.beginPath(); ctx.moveTo(x+w/4,highY); ctx.lineTo(x+w/4,lowY); ctx.stroke();
    ctx.fillRect(x,Math.min(openY,closeY),w/2,Math.abs(openY-closeY)||2);
  });
 }
-
 function updateSignal(){
  if(candles.length<2)return;
  let last=candles[candles.length-1], prev=candles[candles.length-2];
@@ -362,10 +352,15 @@ function updateSignal(){
  }
  document.getElementById("signalDesc").innerText="Confidence: "+confidence+"% | Mode: "+marketMode;
 }
-
 function animate(){ generateCandle(); drawChart(); updateSignal(); setTimeout(animate,1200); }
 animate();
 
+// ================= REDIRECT WITH LOADER =================
+function redirectWithLoader(url){
+  const loader = document.getElementById("loader");
+  loader.classList.remove("hidden");
+  setTimeout(()=> window.location.href = url, 1500);
+}
 </script>
 </body>
-    </html>
+        </html> 

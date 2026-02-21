@@ -1,31 +1,35 @@
-/* ===============================
-   BINANCE-INSPIRED THEME SYSTEM
-   Dark + Light Mode
-================================ */
+/* =====================================
+   BINANCE-STYLE UI (DARK + LIGHT)
+   Matches Updated script.js
+===================================== */
 
-:root{
+/* ===== DEFAULT THEME VARIABLES (DARK) ===== */
+body.dark{
   --bg-main:#0b0e11;
   --bg-card:#161a1e;
   --bg-card-2:#1e2329;
   --text-main:#eaecef;
   --text-muted:#848e9c;
+  --border:#2b3139;
   --yellow:#f0b90b;
   --green:#0ecb81;
   --red:#f6465d;
-  --border:#2b3139;
 }
 
-/* ===== LIGHT MODE VARIABLES ===== */
+/* ===== LIGHT THEME VARIABLES ===== */
 body.light{
   --bg-main:#f5f5f5;
   --bg-card:#ffffff;
   --bg-card-2:#f0f0f0;
   --text-main:#1e2329;
   --text-muted:#6f7785;
-  --border:#e0e0e0;
+  --border:#e6e8ea;
+  --yellow:#f0b90b;
+  --green:#0ecb81;
+  --red:#f6465d;
 }
 
-/* ===== GLOBAL RESET ===== */
+/* ===== RESET ===== */
 *{
   margin:0;
   padding:0;
@@ -33,11 +37,14 @@ body.light{
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+/* ===== BODY ===== */
 body{
   background:var(--bg-main);
   color:var(--text-main);
   min-height:100vh;
-  transition:background-color .25s ease, color .25s ease;
+  transition:
+    background-color .25s ease,
+    color .25s ease;
 }
 
 /* ===== HEADER ===== */
@@ -48,7 +55,6 @@ body{
   padding:16px 20px;
   background:var(--bg-card);
   border-bottom:1px solid var(--border);
-  transition:background-color .25s ease;
 }
 
 .logo{
@@ -57,9 +63,20 @@ body{
   color:var(--yellow);
 }
 
-.user{
-  color:var(--text-muted);
-  font-size:14px;
+/* ===== THEME TOGGLE ===== */
+.theme-btn{
+  background:var(--bg-card-2);
+  color:var(--text-main);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:8px 14px;
+  font-size:13px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.theme-btn:hover{
+  background:var(--bg-card);
 }
 
 /* ===== BALANCE CARD ===== */
@@ -68,7 +85,6 @@ body{
   padding:20px;
   background:var(--bg-card-2);
   border-radius:12px;
-  transition:background-color .25s ease;
 }
 
 .balance-title{
@@ -76,17 +92,49 @@ body{
   color:var(--text-muted);
 }
 
-.balance-amount{
+#balance{
   font-size:28px;
   font-weight:700;
-  margin-top:8px;
+  margin-top:6px;
 }
 
-/* ===== BUTTONS ===== */
+/* ===== TRADING CONTROLS ===== */
+.trade-controls{
+  display:flex;
+  gap:12px;
+  margin:0 20px 20px;
+}
+
+.trade-controls button{
+  flex:1;
+  padding:12px;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+  border:none;
+  transition:.2s;
+}
+
+.btn-start{
+  background:var(--green);
+  color:#000;
+}
+
+.btn-hold{
+  background:var(--yellow);
+  color:#000;
+}
+
+.btn-stop{
+  background:var(--red);
+  color:#fff;
+}
+
+/* ===== WALLET BUTTONS ===== */
 .btn-group{
   display:flex;
   gap:12px;
-  margin:20px;
+  margin:0 20px;
 }
 
 .btn{
@@ -94,18 +142,14 @@ body{
   padding:14px;
   border-radius:8px;
   font-weight:600;
-  border:none;
   cursor:pointer;
-  transition:all .2s ease;
+  border:none;
+  transition:.2s;
 }
 
 .btn-yellow{
   background:var(--yellow);
   color:#000;
-}
-
-.btn-yellow:hover{
-  opacity:.85;
 }
 
 .btn-dark{
@@ -118,9 +162,9 @@ body{
   background:var(--bg-card-2);
 }
 
-/* ===== STATUS MESSAGE ===== */
+/* ===== STATUS TEXT ===== */
 .status{
-  margin-top:12px;
+  margin:12px 20px;
   text-align:center;
   font-size:14px;
 }
@@ -134,22 +178,39 @@ body{
   color:var(--green);
 }
 
-/* ===== THEME BUTTON ===== */
-.theme-btn{
-  padding:8px 14px;
-  border-radius:20px;
-  background:var(--bg-card-2);
-  border:1px solid var(--border);
-  color:var(--text-main);
-  font-size:13px;
-  cursor:pointer;
+/* ===== BLINK EFFECT (BALANCE) ===== */
+.blink-green{
+  color:var(--green);
+  animation:blink .5s;
 }
 
-/* ===== ANIMATIONS ===== */
+.blink-red{
+  color:var(--red);
+  animation:blink .5s;
+}
+
+@keyframes blink{
+  0%{opacity:1}
+  50%{opacity:.3}
+  100%{opacity:1}
+}
+
+/* ===== SHAKE EFFECT ===== */
 @keyframes shake{
   0%{transform:translateX(0)}
-  25%{transform:translateX(-5px)}
-  50%{transform:translateX(5px)}
-  75%{transform:translateX(-5px)}
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-4px)}
   100%{transform:translateX(0)}
 }
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+  .balance-card{
+    margin:14px;
+  }
+  .btn-group,
+  .trade-controls{
+    margin:0 14px 14px;
+  }
+     }
